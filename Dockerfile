@@ -15,10 +15,11 @@ RUN sed -i s/PANDAS_VERSION/${PANDAS_VERSION}/g /var/lib/pandas/Pipfile && \
 RUN pipenv lock --requirements > requirements.txt
 RUN pipenv lock --requirements --dev > requirements-dev.txt
 
-FROM alpine:${ALPINE_VERSION} as alpine
+FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION} as alpine
+ARG ALPINE_VERSION
 WORKDIR /var/lib/pandas/
 COPY --from=lock /var/lib/pandas/ .
-RUN apk add --no-cache python3-dev libstdc++ && \
+RUN apk add --no-cache libstdc++ && \
     apk add --no-cache --virtual .build-deps g++ && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h && \
     pip3 install $(grep numpy requirements.txt) && \

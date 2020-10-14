@@ -17,6 +17,8 @@ RUN pipenv lock --requirements --dev > requirements-dev.txt
 
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION} as alpine
 ARG ALPINE_VERSION
+ARG PYTHON_VERSION
+ARG PANDAS_VERSION
 WORKDIR /var/lib/pandas/
 COPY --from=lock /var/lib/pandas/ .
 RUN apk add --no-cache libstdc++ && \
@@ -25,21 +27,36 @@ RUN apk add --no-cache libstdc++ && \
     pip3 install $(grep numpy requirements.txt) && \
     pip3 install -r requirements.txt && \
     apk del .build-deps
+LABEL org.alpinelinux.version ${ALPINE_VERSION}
+LABEL org.python.version ${PYTHON_VERSION}
+LABEL org.pydata.pandas.version ${PANDAS_VERSION}
 
 FROM python:${PYTHON_VERSION}-slim AS slim
+ARG PYTHON_VERSION
+ARG PANDAS_VERSION
 WORKDIR /var/lib/pandas/
 COPY --from=lock /var/lib/pandas/ .
 RUN pip install $(grep numpy requirements.txt) && \
     pip install -r requirements.txt
+LABEL org.python.version ${PYTHON_VERSION}
+LABEL org.pydata.pandas.version ${PANDAS_VERSION}
 
 FROM python:${PYTHON_VERSION} AS jupyter
+ARG PYTHON_VERSION
+ARG PANDAS_VERSION
 WORKDIR /var/lib/pandas/
 COPY --from=lock /var/lib/pandas/ .
 RUN pip install $(grep numpy requirements.txt) && \
     pip install -r requirements.txt -r requirements-dev.txt
+LABEL org.python.version ${PYTHON_VERSION}
+LABEL org.pydata.pandas.version ${PANDAS_VERSION}
 
 FROM python:${PYTHON_VERSION} AS latest
+ARG PYTHON_VERSION
+ARG PANDAS_VERSION
 WORKDIR /var/lib/pandas/
 COPY --from=lock /var/lib/pandas/ .
 RUN pip install $(grep numpy requirements.txt) && \
     pip install -r requirements.txt
+LABEL org.python.version ${PYTHON_VERSION}
+LABEL org.pydata.pandas.version ${PANDAS_VERSION}

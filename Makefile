@@ -1,7 +1,8 @@
 REPO           := blockdox/pandas
 STAGES         := lock alpine slim jupyter latest
+SCIPY_VERSION  := 1.5.2
 
-.PHONY: default clean clobber push check_vars
+.PHONY: default clean clobber push check_vars scipy
 
 default: $(STAGES)
 
@@ -48,3 +49,10 @@ latest:
 lock: Pipfile.lock
 
 $(STAGES): %: check_vars .docker/%
+
+# Extra build targets
+scipy: check_vars
+	docker build \
+	--build-arg PANDAS_VERSION=$(PANDAS_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
+	-t $(REPO):$(PANDAS_VERSION)-scipy$(SCIPY_VERSION)-py$(PYTHON_VERSION) \
+	scipy

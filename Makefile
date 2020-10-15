@@ -1,10 +1,13 @@
 REPO           := amancevice/pandas
 STAGES         := lock alpine slim jupyter latest
-PANDAS_VERSION := $(shell grep pandas Pipfile | grep -o '[0-9.]\+')
 
-.PHONY: default clean clobber push
+.PHONY: default clean clobber push check_vars
 
 default: $(STAGES)
+
+check_vars:
+	@test $${PANDAS_VERSION?Please set environment variable PANDAS_VERSION}
+	@test $${PYTHON_VERSION?Please set environment variable PYTHON_VERSION}
 
 .docker:
 	mkdir -p $@
@@ -15,7 +18,7 @@ default: $(STAGES)
 .docker/jupyter: .docker/slim
 .docker/latest:  .docker/jupyter
 .docker/%:     | .docker
-	docker build --iidfile $@ --tag $(REPO):$* --target $* .
+	docker build --build-arg PANDAS_VERSION=$(PANDAS_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION) --iidfile $@ --tag $(REPO):$* --target $* .
 
 Pipfile.lock: .docker/lock
 	docker run --rm --entrypoint cat $$(cat $<) $@ > $@
@@ -36,12 +39,12 @@ push: default
 	docker image push $(REPO):$(PANDAS_VERSION)-jupyter
 	docker image push $(REPO):$(PANDAS_VERSION)
 
-alpine slim jupyter:
-	docker image tag $(REPO):$* $(REPO):$(PANDAS_VERSION)-$*
+alpine slim jupyter: check_vars
+	docker image tag $(REPO):$* $(REPO):$(PANDAS_VERSION)-py$(PYTHON_VERSION)-$*
 
 latest:
 	docker image tag $(REPO):$* $(REPO):$(PANDAS_VERSION)
 
 lock: Pipfile.lock
 
-$(STAGES): %: .docker/%
+$(STAGES): %: check_vars .docker/%

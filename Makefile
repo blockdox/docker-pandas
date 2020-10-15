@@ -1,4 +1,4 @@
-REPO           := amancevice/pandas
+REPO           := blockdox/pandas
 STAGES         := lock alpine slim jupyter latest
 
 .PHONY: default clean clobber push check_vars

@@ -1,3 +1,7 @@
+# Introduction
+
+This is an adaptation of [The upstream repository by _amancevice_](https://github.com/amancevice/docker-pandas/). The documentation still references it in some places.
+
 # Pandas
 
 ![version](https://img.shields.io/docker/v/amancevice/pandas?color=blue&label=version&logo=docker&logoColor=eee&sort=semver&style=flat-square)
@@ -12,19 +16,19 @@ _Note: images using Python 2.7 are no longer supported_
 Pull image tags with the `pandas` version you wish to use:
 
 ```bash
-docker pull amancevice/pandas:x.y.z
+docker pull blockdox/pandas:x.y.z
 ```
 
 For slim images append `-slim` to the tag:
 
 ```bash
-docker pull amancevice/pandas:x.y.z-slim
+docker pull blockdox/pandas:x.y.z-slim
 ```
 
 For alpine-based images append `-alpine` to the tag:
 
 ```bash
-docker pull amancevice/pandas:x.y.z-alpine
+docker pull blockdox/pandas:x.y.z-alpine
 ```
 
 ## Building
